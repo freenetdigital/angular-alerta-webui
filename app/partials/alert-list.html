@@ -15,7 +15,7 @@
     <div class="col-md-2 col-sm-2 col-xs-12">
       <select class="form-control input-sm" ng-options="item as item.name for item in show track by item.name" ng-model="status" ng-change="update()"></select>
     </div>
-    <div class="col-md-2 col-sm-2 col-xs-12">
+    <div class="col-md-2 col-sm-2 col-xs-12 hidden-xs">
       <button type="button" class="btn btn-primary btn-block" ng-click="refresh()" ng-disabled="autoRefresh">{{ refreshText }}</button>
     </div>
   </div> <!-- row -->
