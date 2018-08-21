@@ -1,7 +1,7 @@
 
 <div>
   <button ng-disabled="!hasPermission('write:alerts')" type="button" class="btn btn-success"
-          ng-click="openAlert(alert.id)"
+          ng-click="unackAlert(alert.id)"
           ng-disabled="alert.status == 'open'"><i class="glyphicon glyphicon-arrow-up"></i> Open</button>
   <!-- button ng-disabled"!hasPermission('write:alerts')" type="button" class="btn btn-default"
           ng-click="tagAlert(alert.id, ['foo'])">Tag</button -->
@@ -13,6 +13,21 @@
           ng-click="unwatchAlert(alert.id, user)"
           ng-show="alert.tags.indexOf('watch:'+user) > -1"
           ng-disabled="!isAuthenticated();"><i class="glyphicon glyphicon-eye-close"></i> Unwatch</button>
+  <div class="btn-group" ng-disabled="!hasPermission('write:alerts')" ng-show="alert.status != 'shelved'">
+    <button type="button" class="btn btn-info"><i class="glyphicon glyphicon-time"></i> Shelve</button>
+    <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li><a ng-click="shelveAlert(alert.id, user, 3600)" href="#">1 hour</a></li>
+      <li><a ng-click="shelveAlert(alert.id, user, 7200)" href="#">2 hours</a></li>
+      <li><a ng-click="shelveAlert(alert.id, user, 14400)" href="#">4 hours</a></li>
+      <li><a ng-click="shelveAlert(alert.id, user, 28800)" href="#">8 hours</a></li>
+    </ul>
+  </div>
+  <button ng-disabled="!hasPermission('write:alerts')" type="button" class="btn btn-info"
+          ng-click="unshelveAlert(alert.id, user)"
+          ng-show="alert.status == 'shelved'"><i class="glyphicon glyphicon-time"></i> Unshelve</button>
   <button ng-disabled="!hasPermission('write:alerts')" type="button" class="btn btn-primary"
           ng-click="ackAlert(alert.id)"
           ng-disabled="alert.status == 'ack'"><i class="glyphicon glyphicon-ok-circle"></i> Ack</button>
@@ -88,7 +103,7 @@
     <td class="visible-lg">{{ history.id }}</td>
     <td class="visible-xs">{{ history.updateTime | date:shortTime }}</td>
     <td class="hidden-xs">{{ history.updateTime | date:longDate }}</td>
-    <td><span class="label label-{{ history.status || history.severity }}">{{ history.status || history.severity | capitalize }}</span></td>
+    <td><span class="label label-{{ history.status || history.severity }}">{{ history.status || history.severity || 'N/A' | capitalize }}</span></td>
     <td class="hidden-xs"><span class="label label-default">{{ history.type || 'unknown' | capitalize }}</span></td>
     <td>{{ history.event }}</td>
     <td class="hidden-xs">{{ history.value }}</td>

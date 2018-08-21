@@ -59,7 +59,7 @@ alertaControllers.controller('MenuController', ['$scope', '$location', '$auth', 
 
     $scope.isCustomerViews = function() {
       if ($auth.isAuthenticated()) {
-        return 'customer' in $auth.getPayload();
+        return 'customers' in $auth.getPayload() || 'customer' in $auth.getPayload();
       } else {
         return false;
       }
@@ -155,9 +155,16 @@ alertaControllers.controller('AlertListController', ['$scope', '$route', '$locat
     $scope.show = [
       {name: 'Open', value: ['open', 'unknown']},
       {name: 'Active', value: ['open', 'ack', 'assign']},
-      {name: 'Closed', value: ['closed', 'expired']}
+      {name: 'Shelved', value: ['shelved']},
+      {name: 'Closed', value: ['closed', 'expired']},
+      {name: 'Blackout', value: ['blackout']}
     ];
-    $scope.status = $scope.show[0];
+
+    if (search.status) {
+      $scope.status = {name: '', value: search.status};
+    } else {
+      $scope.status = $scope.show[0];
+    }
 
     $scope.alerts = [];
     $scope.alertLimit = 20;
@@ -244,7 +251,7 @@ alertaControllers.controller('AlertListController', ['$scope', '$route', '$locat
       if ($scope.autoRefresh) {
         refresh();
       }
-      timer = $timeout(refreshWithTimeout, 5000);
+      timer = $timeout(refreshWithTimeout, config.refresh_interval || 5000);
     };
     var timer = $timeout(refreshWithTimeout, 200);
 
@@ -299,8 +306,10 @@ alertaControllers.controller('AlertListController', ['$scope', '$route', '$locat
         } else {
           $scope.bulkAlerts.push(alert.id);
         }
-      } else {
+      } else if(!$event.ctrlKey){
         $location.url('/alert/' + alert.id);
+    } else if($event.ctrlKey) {
+        window.open('/#/alert' + alert.id, '_blank');
       }
     };
 
@@ -364,6 +373,12 @@ alertaControllers.controller('AlertListController', ['$scope', '$route', '$locat
       $route.reload();
     };
 
+    $scope.bulkOpenTabAlert = function(ids) {
+      angular.forEach(ids, function(id) {
+        window.open('/#/alert/' + id, '_blank');
+      });
+    };
+
     $scope.shortTime = config.dates && config.dates.shortTime || 'HH:mm';
     $scope.mediumDate = config.dates && config.dates.mediumDate || 'EEE d MMM HH:mm';
   }]);
@@ -387,8 +402,8 @@ alertaControllers.controller('AlertDetailController', ['$scope', '$route', '$rou
       $scope.alert = response.alert;
     });
 
-    $scope.openAlert = function(id) {
-      Alert.status({id: id}, {status: 'open', text: 'status change via console' + byUser}, function(data) {
+    $scope.unackAlert = function(id) {
+      Alert.action({id: id}, {action: 'unack', text: 'status change via console' + byUser}, function(data) {
         $route.reload();
       });
     };
@@ -412,13 +427,25 @@ alertaControllers.controller('AlertDetailController', ['$scope', '$route', '$rou
     };
 
     $scope.ackAlert = function(id) {
-      Alert.status({id: id}, {status: 'ack', text: 'status change via console' + byUser}, function(data) {
+      Alert.action({id: id}, {action: 'ack', text: 'status change via console' + byUser}, function(data) {
+        $route.reload();
+      });
+    };
+
+    $scope.shelveAlert = function(id, user, timeout) {
+      Alert.action({id: id}, {action: 'shelve', text: 'status change via console' + byUser, timeout: timeout}, function(data) {
+        $route.reload();
+      });
+    };
+
+    $scope.unshelveAlert = function(id, user) {
+      Alert.action({id: id}, {action: 'unshelve', text: 'status change via console' + byUser}, function(data) {
         $route.reload();
       });
     };
 
     $scope.closeAlert = function(id) {
-      Alert.status({id: id}, {status: 'closed', text: 'status change via console' + byUser}, function(data) {
+      Alert.action({id: id}, {action: 'close', text: 'status change via console' + byUser}, function(data) {
         $route.reload();
       });
     };
@@ -465,6 +492,7 @@ alertaControllers.controller('AlertTop10Controller', ['$scope', '$location', '$t
 
     $scope.top10 = [];
     $scope.flapping = [];
+    $scope.standing = [];
     $scope.query = {};
 
     $scope.setService = function(s) {
@@ -547,12 +575,17 @@ alertaControllers.controller('AlertTop10Controller', ['$scope', '$location', '$t
           $scope.flapping = response.top10;
         }
       });
+      Top10.standing($scope.query, function(response) {
+        if (response.status == 'ok') {
+          $scope.standing = response.top10;
+        }
+      });
     };
     var refreshWithTimeout = function() {
       if ($scope.autoRefresh) {
         refresh();
       }
-      timer = $timeout(refreshWithTimeout, 5000);
+      timer = $timeout(refreshWithTimeout, config.refresh_interval || 5000);
     };
     var timer = $timeout(refresh, 200);
 
@@ -695,6 +728,12 @@ alertaControllers.controller('AlertWatchController', ['$scope', '$route', '$loca
       $route.reload();
     };
 
+    $scope.bulkOpenTabAlert = function(ids) {
+      angular.forEach(ids, function(id) {
+        window.open('/#/alert/' + id, '_blank');
+      });
+    };
+
     $scope.shortTime = config.dates && config.dates.shortTime || 'HH:mm';
     $scope.mediumDate = config.dates && config.dates.mediumDate || 'EEE d MMM HH:mm';
   }]);
@@ -760,6 +799,7 @@ alertaControllers.controller('UserController', ['$scope', '$route', '$timeout', 
 
     Perms.all(function(response) {
       $scope.roles = response.permissions.map(p => p.match);
+      $scope.roles.push('user');  // add default 'user' role as option
     });
 
     $scope.updateRole = function(user, role) {
@@ -876,7 +916,7 @@ alertaControllers.controller('ProfileController', ['$scope', '$auth',
     $scope.name = $auth.getPayload().name;
     $scope.login = $auth.getPayload().preferred_username || $auth.getPayload().login;
     $scope.provider = $auth.getPayload().provider;
-    $scope.customer = $auth.getPayload().customer;
+    $scope.customers = $auth.getPayload().customers || $auth.getPayload().customer;
     $scope.role = $auth.getPayload().role;  // legacy role
 
     $scope.orgs = $auth.getPayload().orgs;
