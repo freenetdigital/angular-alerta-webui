@@ -18,6 +18,7 @@ alertaServices.factory('Alert', ['$resource', 'config',
       'save':   {method:'POST'},
       'get':    {method:'GET'},
       'status': {method:'PUT', url: config.endpoint+'/alert/:id/status'},
+      'action': {method:'PUT', url: config.endpoint+'/alert/:id/action'},
       'remove': {method:'DELETE'},
       'delete': {method:'DELETE'},
       'tag':    {method:'PUT', url: config.endpoint+'/alert/:id/tag'},
@@ -29,7 +30,8 @@ alertaServices.factory('Top10', ['$resource', 'config',
   function($resource, config) {
     return $resource(config.endpoint, {}, {
       'offenders': {method:'GET', url: config.endpoint+'/alerts/top10/count'},
-      'flapping':  {method:'GET', url: config.endpoint+'/alerts/top10/flapping'}
+      'flapping':  {method:'GET', url: config.endpoint+'/alerts/top10/flapping'},
+      'standing':  {method:'GET', url: config.endpoint+'/alerts/top10/standing'}
     });
   }]);
 
