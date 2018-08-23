@@ -47,6 +47,7 @@
           <th class="hidden-xs"><a href="" ng-click="predicate = 'event'; reverse=!reverse">Event&nbsp;<span ng-hide="predicate != 'event'"><span ng-show="!reverse">^</span><span ng-show="reverse">v</span></span></a></th>
           <th class="hidden-xs"><a href="" ng-click="predicate = 'value'; reverse=!reverse">Value&nbsp;<span ng-hide="predicate != 'value'"><span ng-show="!reverse">^</span><span ng-show="reverse">v</span></span></a></th>
           <th><a href="" ng-click="predicate = 'text'; reverse=!reverse">Text&nbsp;<span ng-hide="predicate != 'text'"><span ng-show="!reverse">^</span><span ng-show="reverse">v</span></span></a></th>
+          <th></th>
         </tr>
 
         <tr ng-repeat="alert in alerts | filter:search | orderBy:predicate:reverse | limitTo:alertLimit"
@@ -64,6 +65,8 @@
           <td class="hidden-xs">{{ alert.event }}</td>
           <td class="hidden-xs">{{ alert.value }}</td>
           <td><span ng-bind-html="alert.text"></span></td>
+          <td ng-click="$event.stopPropagation()"><a ng-if="alert.attributes.grafana_url" href="{{ alert.attributes.grafana_url }}" target="_blank"><img src="img/grafana_icon.svg" style="width:16px;height:16px;border:0" /></a></td>
+          <td ng-click="$event.stopPropagation();"><img ng-if="alert.attributes.soc_instructions" src="img/soc.png" style="width:16px;height:16px;border:0" title="{{ alert.attributes.soc_instructions }}" /></td>
         </tr>
       </table>
 

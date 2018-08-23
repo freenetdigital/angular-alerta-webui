@@ -9,6 +9,7 @@
           ng-click="watchAlert(alert.id, user)"
           ng-show="alert.tags.indexOf('watch:'+user) == -1"
           ng-disabled="!isAuthenticated();"><i class="glyphicon glyphicon-eye-open"></i> Watch</button>
+  <button type="button" class="btn btn-default" ng-if="alert.attributes.grafana_url"><a href="{{ alert.attributes.grafana_url }}" target="_blank" style="color:inherit;text-decoration:none;"><img src="img/grafana_icon.svg" style="width:16px;height:16px;border:0" /> Graph</a></button>
   <button ng-disabled="!hasPermission('write:alerts')" type="button" class="btn btn-default"
           ng-click="unwatchAlert(alert.id, user)"
           ng-show="alert.tags.indexOf('watch:'+user) > -1"
