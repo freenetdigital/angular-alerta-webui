@@ -79,7 +79,7 @@
             <span ng-if="col == 'trendIndication'"><i class="glyphicon glyphicon-{{ alert.trendIndication | arrow }}"></i></span>
             <span ng-if="col == 'receiveTime'">{{ alert.receiveTime | date:mediumDate }}</span>
             <span ng-if="col == 'lastReceiveId'">{{ alert.lastReceiveId | shortid }}</span>
-            <span ng-if="col == 'lastReceiveTime'">{{ alert.lastReceiveTime | date:mediumDate }}</span>
+            <span ng-if="col == 'lastReceiveTime'">{{ alert.lastReceiveTime | date:'MMM, d HH:mm:ss' }}</span>
             <!-- history not supported -->
           </td>
           <td ng-click="$event.stopPropagation()" class="hidden-xs"><a ng-if="alert.attributes.grafana_url" href="{{ alert.attributes.grafana_url }}" target="_blank"><img src="img/grafana_icon.svg" style="width:16px;height:16px;border:0" /></a></td>
