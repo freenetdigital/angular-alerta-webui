@@ -43,6 +43,8 @@
               <span ng-hide="predicate != col"><span ng-show="!reverse">v</span><span ng-show="reverse">^</span></span>
             </a>
           </th>
+          <th></th>
+          <th></th>
         </tr>
 
         <tr ng-repeat="alert in alerts | filter:filter | orderBy:predicate:reverse | limitTo:alertLimit"
@@ -80,6 +82,8 @@
             <span ng-if="col == 'lastReceiveTime'">{{ alert.lastReceiveTime | date:mediumDate }}</span>
             <!-- history not supported -->
           </td>
+          <td ng-click="$event.stopPropagation()"><a ng-if="alert.attributes.grafana_url" href="{{ alert.attributes.grafana_url }}" target="_blank"><img src="img/grafana_icon.svg" style="width:16px;height:16px;border:0" /></a></td>
+          <td ng-click="$event.stopPropagation();"><img ng-if="alert.attributes.soc_instructions" src="img/soc.png" style="width:16px;height:16px;border:0" title="{{ alert.attributes.soc_instructions }}" /></td>
         </tr>
       </table>
 
