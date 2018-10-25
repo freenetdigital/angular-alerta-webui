@@ -1,0 +1,36 @@
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">SOC</h3>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div>
+              <h4>Alert</h4>
+              <table class="table borderless">
+                <tr><th>Event</th><td>{{ $ctrl.alertElement.event }}</td></tr>
+                <tr><th>Resource</th><td>{{ $ctrl.alertElement.resource }}</td></tr>
+                <tr><th>Details</th><td>{{ $ctrl.alertElement.text }}</td></tr>
+              </table>
+              <hr>
+            </div>
+            <div ng-if="$ctrl.alertElement.attributes.soc_instructions">
+              <h4>SOC instructions</h4>
+              <p ng-bind-html="$ctrl.alertElement.attributes.soc_instructions"></p>
+              <hr>
+            </div>
+            <div>
+              <h4>Useful search links</h4>
+              <div ng-repeat="category in $ctrl.urlCategories">
+                <h5>{{ category }}</h6>
+                <div class="btn-group" role="group">
+                  <button ng-repeat="url in $ctrl.urls" ng-if="url.category == category" type="button" class="btn btn-default" ng-click="$ctrl.search(url.id)">{{ url.label }}</button>
+                </div>
+              </div>
+            </div>
+            <div ng-if="$ctrl.alertElement.attributes.instructions">
+              <hr>
+              <h4>Solution hint</h4>
+              <p ng-bind-html="$ctrl.alertElement.attributes.instructions"></p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="$ctrl.close()">Close</button>
+        </div>

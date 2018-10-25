@@ -35,5 +35,23 @@
         "new": "/audio/Bike Horn.mp3"
     },
     "tracking_id": "UA-NNNNNN-N",
-    "refresh_interval": 30000
+    "refresh_interval": 30000,
+    "soc": {
+      "searchUrls": [
+        {
+          "id":            "confluence",
+          "category":      "Documentation",
+          "label":         "Confluence",
+          "queryTemplate": "(\"[[[resource_stripped]]]?\" OR \"[[[event]]]\")",
+          "urlTemplate":   "https://confluence.example.org/dosearchsite.action?queryString=[[[query]]]"
+        },
+        {
+          "id":            "jira",
+          "category":      "Documentation",
+          "label":         "JIRA issues",
+          "queryTemplate": "text ~ \"[[[resource_stripped]]]\"",
+          "urlTemplate":   "https://jira.example.org/issues/?jql=[[[query]]]"
+        }
+      ]
+    }
 }

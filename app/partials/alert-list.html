@@ -1,5 +1,4 @@
 
-
 <div class="container-fluid">
 
   <div class="row">
@@ -83,7 +82,7 @@
             <!-- history not supported -->
           </td>
           <td ng-click="$event.stopPropagation()" class="hidden-xs"><a ng-if="alert.attributes.grafana_url" href="{{ alert.attributes.grafana_url }}" target="_blank"><img src="img/grafana_icon.svg" style="width:16px;height:16px;border:0" /></a></td>
-          <td ng-click="$event.stopPropagation();"><img ng-if="alert.attributes.soc_instructions" src="img/soc.png" style="width:16px;height:16px;border:0" title="{{ alert.attributes.soc_instructions }}" /></td>
+          <td ng-click="$event.stopPropagation();" ng-controller="SocPopupController"><img src="img/soc.png" style="width:16px;height:16px;border:0" title="{{ alert.attributes.soc_instructions }}" ng-click="openSocPopup(alert)" /></td>
         </tr>
       </table>
 

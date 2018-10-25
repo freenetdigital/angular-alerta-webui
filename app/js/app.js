@@ -2,6 +2,7 @@
 
 
 angular.module('alerta', [
+  'ui.bootstrap',
   'ngResource',
   'ngRoute',
   'ngSanitize',

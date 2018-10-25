@@ -485,6 +485,93 @@ angular.module('alerta')
     }
   ])
 
+  .controller('SocPopupController', ['$scope', '$uibModal', '$route', '$location', '$timeout', '$auth', 'config', 'Count', 'Environment', 'Service', 'Alert',
+    function($scope, $uibModal, $route, $location, $timeout, $auth, config, Count, Environment, Service, Alert) {
+      var $ctrl = this;
+
+      $scope.openSocPopup = function(alertElement) {
+        //enrich alert with stripped resource (e.g. server01:/disk -> server01) for better search results
+        if(alertElement.resource) {
+          alertElement.resource_stripped = alertElement.resource.replace(/:.*$/, "");
+        }
+        //tell SOC to do nothing if no soc_instructions are defined by the alert
+        if(!alertElement.attributes.soc_instructions) {
+          alertElement.attributes.soc_instructions = "Nothing to do for SOC";
+        }
+
+        var modalInstance = $uibModal.open({
+          animation: $ctrl.animationsEnabled,
+          templateUrl: 'partials/socpopup.html',
+          controller: 'SocPopupInstanceController',
+          controllerAs: '$ctrl',
+          resolve: {
+            alertElement: function () {
+              return alertElement;
+            }
+          }
+        });
+      }
+    }
+  ])
+
+  .controller('SocPopupInstanceController', ['$uibModalInstance', 'alertElement', 'config', "$window",
+    function($uibModalInstance, alertElement, config, $window) {
+      var $ctrl = this;
+      $ctrl.alertElement = alertElement;
+      $ctrl.urls = [];
+      if(config.soc.searchUrls) {
+        $ctrl.urls = config.soc.searchUrls
+        $ctrl.urlCategories = $ctrl.urls.map(item => item.category).filter((value, index, self) => self.indexOf(value) === index);
+      }
+
+      $ctrl.search = function (id) {
+        var url = $ctrl.urls.find(function(element) {
+          return element.id == id;
+        });
+
+        if(url) {
+          var searchUrl = url.urlTemplate;
+
+          if(url.queryTemplate) {
+            var query = url.queryTemplate;
+            var matches;
+            if(matches = searchUrl.match(/\[\[\[([a-z\._]+)\]\]\]/gi)) {
+              var replacement, i = 0;
+              while(replacement = query.match(/\[\[\[([a-z\._]+)\]\]\]/i)) {
+                query = query.replace(replacement[0], eval("$ctrl.alertElement." + replacement[1]))
+                i++;
+                if(i > matches.length) { break };
+              }
+              searchUrl = searchUrl.replace(/\[\[\[query\]\]\]/i, encodeURI(query));
+            }
+          }
+
+          var matches;
+          if(matches = searchUrl.match(/\[\[\[([a-z\._]+)\]\]\]/gi)) {
+            var replacement, i = 0;
+            while(replacement = searchUrl.match(/\[\[\[([a-z\._]+)\]\]\]/i)) {
+               searchUrl = searchUrl.replace(replacement[0], encodeURI(eval("$ctrl.alertElement." + replacement[1])))
+               i++;
+               if(i > matches.length) { break };
+            }
+          }
+
+          //try to use fallback URL if empty
+          if(searchUrl == "undefined") {
+            searchUrl = url.fallbackUrl;
+          }
+
+          //open search URL in new tab
+          $window.open(searchUrl, "_blank");
+        }
+      };
+
+      $ctrl.close = function () {
+        $uibModalInstance.close();
+      };
+    }
+  ])
+
   .controller('AlertDetailController', ['$scope', '$route', '$routeParams', '$location', '$auth', 'config', 'Alert',
     function($scope, $route, $routeParams, $location, $auth, config, Alert) {
 
