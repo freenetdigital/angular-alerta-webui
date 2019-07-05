@@ -1,4 +1,5 @@
 {
+    "columns": ["status","createTime","lastReceiveTime","environment","service","resource","event","value","text","severity","duplicateCount"],
     "endpoint": "http://localhost:8080",
     "provider": "basic",
     "client_id": "INSERT-CLIENT-ID-HERE",
