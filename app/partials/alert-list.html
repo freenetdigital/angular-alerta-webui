@@ -67,7 +67,7 @@
             <span ng-if="alert.attributes.hasOwnProperty(col)"><span ng-bind-html="alert.attributes[col]"></span></span>
             <span ng-if="col == 'origin'">{{ alert.origin }}</span>
             <span ng-if="col == 'type'"><span class="label">{{ alert.type | splitcaps }}</span></span>
-            <span ng-if="col == 'createTime'">{{ alert.createTime | date:mediumDate }}</span>
+            <span ng-if="col == 'createTime'">{{ alert.createTime | date:'MMM, d HH:mm:ss' }}</span>
             <span ng-if="col == 'timeout'">{{ alert.timeout }}</span>
             <!-- rawData not supported -->
             <span ng-if="col == 'customer' && isCustomerViews()">{{ alert.customer }}</span>
